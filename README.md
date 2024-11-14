@@ -21,5 +21,5 @@ This project is a simple DOS (Denial of Service) and DDoS (Distributed Denial of
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/dos-ddos-tool.git
+   git clone https://github.com/Mr-Fox-h/fox_dos
    cd dos-ddos-tool
