@@ -9,5 +9,6 @@ Gem::Specification.new do |s|
   s.homepage    = "https://github.com/Mr-Fox-h/fox_dos"
   s.add_runtime_dependency 'concurrent-ruby', '~> 1.3', '>= 1.3.4'
   s.add_runtime_dependency 'optparse', '~> 0.6.0'
+  s.add_runtime_dependency 'cli-ui', '~> 2.2', '>= 2.2.3' 
   s.license     = "MIT"
 end
